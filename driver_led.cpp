@@ -12,7 +12,7 @@ void ScanRow(byte r) {
 }
 
 void SendDataHigh(byte data, byte offset) {
-  byte i;
+  int i;
   for (i = 0; i < offset; i++)
   {
     digitalWrite(R1, bitRead(data, 7 - i));
@@ -27,7 +27,7 @@ void SendDataHigh(byte data, byte offset) {
 }
 
 void SendDataLow(byte data, byte offset) {
-  byte i;
+  int i;
   for (i = 0; i < offset; i++)
   {
     digitalWrite(R1, bitRead(data, offset - 1 - i));
@@ -36,14 +36,26 @@ void SendDataLow(byte data, byte offset) {
   }
 }
 
+/***************************************************************************/
+void StaticWord(byte r){
+  int i;
+  for ( i = 0; i < 2; i++) { //2*2片595
+    SendDataHigh(~(Word[ Index + i][r * 2]), 8);
+    SendDataHigh(~(Word[ Index + i][r * 2 + 1]), 8);
+  }
+  if (Offset < 8)
+    SendDataHigh(~(Word[Index + 2][r * 2]), Offset) ;
+  else
+  {
+    SendDataHigh(~(Word[Index + 2][r * 2]), 8) ;
+    SendDataHigh(~(Word[Index + 2][r * 2 + 1]), Offset - 8) ;
+  }
+}
+
 void MoveLeft(byte r) {
   int i;
   for ( i = 0; i < 2; i++) { //2片595
     SendDataHigh(~(Word[ Index + i][r * 2]), 8);
-      SendDataHigh(~(Word[ Index + i][r * 2]), 8); 
-    SendDataHigh(~(Word[ Index + i][r * 2]), 8);
-    SendDataHigh(~(Word[ Index + i][r * 2 + 1]), 8);
-      SendDataHigh(~(Word[ Index + i][r * 2 + 1]), 8); 
     SendDataHigh(~(Word[ Index + i][r * 2 + 1]), 8);
   }
   if (Offset < 8)

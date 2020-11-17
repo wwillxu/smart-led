@@ -16,14 +16,16 @@ extern byte Offset;
 extern byte Index;
 extern byte Delay;
 extern byte DelayMax;
-
 void ScanRow(byte r);
 void SendDataHigh(byte data, byte offset);
 void SendDataLow(byte data, byte offset);
+void StaticWord(byte r);
 void MoveLeft(byte r);
 void MoveRight(byte r);
 
 // 蓝牙模块
+extern char mode;
+void GetMode();
 
 // 字模
 extern byte WordNum;
