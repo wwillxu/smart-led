@@ -16,12 +16,12 @@ void SendDataHigh(byte data, byte offset)
   byte i;
   for (i = 0; i < offset; i++)
   {
-    //digitalWrite(R1, bitRead(data, 7 - i));
-    if (data & 0x80)
-      digitalWrite(R1, 1);
-    else
-      digitalWrite(R1, 0);
-    data = data << 1;
+    digitalWrite(R1, bitRead(data, 7 - i));
+    // if (data & 0x80)
+    //   digitalWrite(R1, 1);
+    // else
+    //   digitalWrite(R1, 0);
+    // data = data << 1;
     digitalWrite(CLK, 0);
     digitalWrite(CLK, 1);
   }
@@ -32,12 +32,12 @@ void SendDataLow(byte data, byte offset)
   byte i;
   for (i = 0; i < offset; i++)
   {
-    //digitalWrite(R1, bitRead(data, offset - 1 - i));
-    if (data & 0x01)
-      digitalWrite(R1, 1);
-    else
-      digitalWrite(R1, 0);
-    data = data >> 1;
+    digitalWrite(R1, bitRead(data, offset - 1 - i));
+    // if (data & 0x01)
+    //   digitalWrite(R1, 1);
+    // else
+    //   digitalWrite(R1, 0);
+    // data = data >> 1;
     digitalWrite(CLK, 0);
     digitalWrite(CLK, 1);
   }
@@ -66,6 +66,41 @@ void MoveLeft(byte r){
         Offset = 0; Index++;
         if (Index == WordNum + 2)
           Index = 0;
+      }
+    }
+}
+
+void MoveRight(byte r){
+    if (Offset<8)
+      SendDataLow(~(Word[Index][r*2+1]),Offset) ; 
+    else
+    {
+      SendDataLow(~(Word[Index][r*2]),Offset-8) ;
+      SendDataLow(~(Word[Index][r*2+1]),8) ;
+    }
+    SendDataHigh(~(Word[ Index+1][r*2]),8);  //SPI      
+    SendDataHigh(~(Word[ Index+1][r*2+1]),8);
+    if (Offset<8)
+    {
+      SendDataHigh(~(Word[Index+2][r*2]),8) ;
+      SendDataHigh(~(Word[Index+2][r*2+1]),8-Offset) ;
+    }
+    else
+    {
+      SendDataHigh(~(Word[Index+2][r*2]),16-Offset) ;  
+    }
+    Delay++;
+    if (Delay == DelayMax) //更改流动速度
+    {
+      Delay = 0;
+      Offset++;
+      if (Offset == 16)
+      {
+        Offset = 0; 
+        if (Index == 0){
+          Index = WordNum + 2;
+        }
+        Index--;
       }
     }
 }

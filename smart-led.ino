@@ -18,34 +18,9 @@ void setup () {
 
 void loop () {
   byte row = 0;
-  // byte offset = 0;
-  // byte k = 0, j = 0;
-  // int i;
   while (1) {
-  //   for ( i = 0; i < 2; i++) { //2片595
-  //     SendDataHigh(~(FontArray[ k + i][row * 2]), 8); 
-  //     SendDataHigh(~(FontArray[ k + i][row * 2 + 1]), 8); 
-  //   }
-  //   if (offset < 8)
-  //     SendDataHigh(~(FontArray[k + 2][row * 2]), offset) ;
-  //   else
-  //   {
-  //     SendDataHigh(~(FontArray[k + 2][row * 2]), 8) ;
-  //     SendDataHigh(~(FontArray[k + 2][row * 2 + 1]), offset - 8) ;
-  //   }
-  //   j++;
-  //   if (j == 40) //更改流动速度
-  //   {
-  //     j = 0;
-  //     offset++;
-  //     if (offset == 16)
-  //     {
-  //       offset = 0; k++;
-  //       if (k == FontNum + 2)
-  //         k = 0;
-  //     }
-  //   }
-    MoveLeft(row);
+    //MoveLeft(row);
+    MoveRight(row);
 
     digitalWrite(EN, 1);      //关闭显示
     ScanRow(row);             //换行

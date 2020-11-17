@@ -20,7 +20,8 @@ extern byte DelayMax;
 void ScanRow(byte r);
 void SendDataHigh(byte data, byte offset);
 void SendDataLow(byte data, byte offset);
-void MoveLeft(byte row);
+void MoveLeft(byte r);
+void MoveRight(byte r);
 
 // 蓝牙模块
 
