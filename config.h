@@ -12,17 +12,20 @@
 #define R1 8    // 595输入
 #define CLK 9   // 595时钟
 #define LAT 10  // 595输出
+extern byte Offset;
+extern byte Index;
+extern byte Delay;
+extern byte DelayMax;
 
 void ScanRow(byte r);
 void SendDataHigh(byte data, byte offset);
 void SendDataLow(byte data, byte offset);
-
-
+void MoveLeft(byte row);
 
 // 蓝牙模块
 
 // 字模
-extern byte FontNum;
-extern byte FontArray[][32];
+extern byte WordNum;
+extern byte Word[][32];
 
 #endif
