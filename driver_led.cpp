@@ -2,7 +2,7 @@
 byte Offset = 0;
 byte Index = 0;
 byte Delay = 0;
-byte DelayMax = 60;
+byte DelayMax = 100;
 
 void ScanRow(byte r) {
   digitalWrite(RowA, (r & 0x01));
@@ -37,7 +37,7 @@ void SendDataLow(byte data, byte offset) {
 }
 
 /***************************************************************************/
-void StaticWord(byte r){
+void StaticWord(byte r) {
   int i;
   for ( i = 0; i < 2; i++) { //2*2片595
     SendDataHigh(~(Word[ Index + i][r * 2]), 8);
@@ -99,19 +99,78 @@ void MoveRight(byte r) {
     SendDataHigh(~(Word[Index + 2][r * 2]), 16 - Offset) ;
   }
   Delay++;
-  if (Delay == DelayMax) //更改流动速度
+  if (Delay == DelayMax) 
   {
     Delay = 0;
     Offset++;
     if (Offset == 16)
     {
       Offset = 0;
-        Offset = 0; 
-      Offset = 0;
       if (Index == 0) {
         Index = WordNum + 2;
       }
       Index--;
+    }
+  }
+}
+
+void MoveUp(byte r) {
+  int i;
+  if (r + Offset<16){
+    for ( i = 0; i < 2; i++) { 
+      SendDataHigh(~(Word[ Index + i][(r + Offset)  * 2]),8); 
+      SendDataHigh(~(Word[ Index + i][(r + Offset)  * 2 + 1]),8);
+    }
+  }else{
+    for ( i = 0; i < 2; i++) { 
+      SendDataHigh(~(Word[ Index + i+2][(r + Offset) % 16 * 2]),8); 
+      SendDataHigh(~(Word[ Index + i+2][(r + Offset) % 16 * 2 + 1]),8);
+    }  }
+
+
+  Delay++;
+  if (Delay == DelayMax) 
+  {
+    Delay = 0;
+    Offset++;
+    if (Offset == 16)
+    {
+      Offset = 0;Index+=2;
+      if (Index >= WordNum) {
+        Index = 0;
+      }
+      //Index--;
+    }
+  }
+}
+
+void MoveDown(byte r) {
+  int i;
+  if (r - Offset<0){
+    for ( i = 0; i < 2; i++) { 
+      // SendByte(~(hz[ k+i][(row-offset+16)%16*2]));  //SPI      
+      // SendByte(~(hz[ k+i][(row-offset+16)%16*2+1]));  //SPI 
+      SendDataHigh(~(Word[ Index + i-2][(r - Offset+16) % 16 * 2]),8); 
+      SendDataHigh(~(Word[ Index + i-2][(r - Offset+16) % 16 * 2 + 1]),8);
+    }
+  }else{
+    for ( i = 0; i < 2; i++) { 
+      SendDataHigh(~(Word[ Index + i][(r - Offset+16) % 16 * 2]),8); 
+      SendDataHigh(~(Word[ Index + i][(r - Offset+16) % 16 * 2 + 1]),8);
+    }  }
+
+
+  Delay++;
+  if (Delay == DelayMax) 
+  {
+    Delay = 0;
+    Offset++;
+    if (Offset == 16)
+    {
+      Offset = 0;Index-=2;
+      if (Index <= 2) {
+        Index = WordNum+2;
+      }
     }
   }
 }
