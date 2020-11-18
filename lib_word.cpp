@@ -1,3 +1,4 @@
+/* 字库：字数与字库数组，在这里更改显示内容*/
 #include "config.h"
 
 byte WordNum = 24;

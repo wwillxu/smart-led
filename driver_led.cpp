@@ -1,9 +1,12 @@
+/* LED驱动：基础输入函数与多个显示模式*/
 #include "config.h"
-byte Offset = 0;
-byte Index = 0;
-byte Delay = 0;
-byte DelayMax = 100;
+byte Offset = 0;      // 偏移量
+byte Index = 0;       // 当前字下标
+byte Delay = 0;       // 延迟标志
+byte DelayMax = 100;  // 延迟量
 
+/***************************************************************************/
+// ScanRow 138行扫描
 void ScanRow(byte r) {
   digitalWrite(RowA, (r & 0x01));
   digitalWrite(RowB, (r & 0x02));
@@ -11,6 +14,7 @@ void ScanRow(byte r) {
   digitalWrite(RowD, (r & 0x08));
 }
 
+// SendDataHigh 595高位输入
 void SendDataHigh(byte data, byte offset) {
   int i;
   for (i = 0; i < offset; i++)
@@ -26,6 +30,7 @@ void SendDataHigh(byte data, byte offset) {
   }
 }
 
+// SendDataLow 595低位输入
 void SendDataLow(byte data, byte offset) {
   int i;
   for (i = 0; i < offset; i++)
@@ -37,9 +42,10 @@ void SendDataLow(byte data, byte offset) {
 }
 
 /***************************************************************************/
+// StaticWord 静态显示
 void StaticWord(byte r) {
   int i;
-  for ( i = 0; i < 2; i++) { //2*2片595
+  for ( i = 0; i < 2; i++) { 
     SendDataHigh(~(Word[ Index + i][r * 2]), 8);
     SendDataHigh(~(Word[ Index + i][r * 2 + 1]), 8);
   }
@@ -52,9 +58,10 @@ void StaticWord(byte r) {
   }
 }
 
+// MoveLeft 向左移动
 void MoveLeft(byte r) {
   int i;
-  for ( i = 0; i < 2; i++) { //2片595
+  for ( i = 0; i < 2; i++) { 
     SendDataHigh(~(Word[ Index + i][r * 2]), 8);
     SendDataHigh(~(Word[ Index + i][r * 2 + 1]), 8);
   }
@@ -66,7 +73,7 @@ void MoveLeft(byte r) {
     SendDataHigh(~(Word[Index + 2][r * 2 + 1]), Offset - 8) ;
   }
   Delay++;
-  if (Delay == DelayMax) //更改流动速度
+  if (Delay == DelayMax) 
   {
     Delay = 0;
     Offset++;
@@ -79,6 +86,7 @@ void MoveLeft(byte r) {
   }
 }
 
+// MoveRight 向右移动
 void MoveRight(byte r) {
   if (Offset < 8)
     SendDataLow(~(Word[Index][r * 2 + 1]), Offset) ;
@@ -87,7 +95,7 @@ void MoveRight(byte r) {
     SendDataLow(~(Word[Index][r * 2]), Offset - 8) ;
     SendDataLow(~(Word[Index][r * 2 + 1]), 8) ;
   }
-  SendDataHigh(~(Word[ Index + 1][r * 2]), 8); //SPI
+  SendDataHigh(~(Word[ Index + 1][r * 2]), 8); 
   SendDataHigh(~(Word[ Index + 1][r * 2 + 1]), 8);
   if (Offset < 8)
   {
@@ -114,6 +122,7 @@ void MoveRight(byte r) {
   }
 }
 
+// MoveUp 向上移动
 void MoveUp(byte r) {
   int i;
   if (r + Offset<16){
@@ -126,7 +135,6 @@ void MoveUp(byte r) {
       SendDataHigh(~(Word[ Index + i+2][(r + Offset) % 16 * 2]),8); 
       SendDataHigh(~(Word[ Index + i+2][(r + Offset) % 16 * 2 + 1]),8);
     }  }
-
 
   Delay++;
   if (Delay == DelayMax) 
@@ -144,12 +152,11 @@ void MoveUp(byte r) {
   }
 }
 
+// MoveDown 向下移动
 void MoveDown(byte r) {
   int i;
   if (r - Offset<0){
     for ( i = 0; i < 2; i++) { 
-      // SendByte(~(hz[ k+i][(row-offset+16)%16*2]));  //SPI      
-      // SendByte(~(hz[ k+i][(row-offset+16)%16*2+1]));  //SPI 
       SendDataHigh(~(Word[ Index + i-2][(r - Offset+16) % 16 * 2]),8); 
       SendDataHigh(~(Word[ Index + i-2][(r - Offset+16) % 16 * 2 + 1]),8);
     }
@@ -158,7 +165,6 @@ void MoveDown(byte r) {
       SendDataHigh(~(Word[ Index + i][(r - Offset+16) % 16 * 2]),8); 
       SendDataHigh(~(Word[ Index + i][(r - Offset+16) % 16 * 2 + 1]),8);
     }  }
-
 
   Delay++;
   if (Delay == DelayMax) 
